@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<title>Vault3 front-end</title>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+	<!-- web3.js from: https://github.com/ethereum/web3.js/blob/1.0/dist/web3.min.js -->
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+	<style>
+		input {
+			margin: 0 auto;
+		}
+	</style>
+  </head>
+	<body class="container">
+
+		<!-- create new vault3 contract section -->
+		<div class="jumbotron pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+	      	<h1 class="display-4">Vault3</h1>
+	    
+	      	<!-- lazy spacing -->
+	      	<br>
+
+	  		<form>
+			  <div class="form-group">
+			    <input type="text" class="form-control col-md-6 col-md-offset-3 text-center" id="acct1Address" placeholder="Enter Account1's public address" required>
+			  </div>
+
+			  <div class="form-group">
+			    <input type="text" class="form-control col-md-6 col-md-offset-3 text-center" id="acct2Address" placeholder="Enter Account2's public address" required>
+			  </div>
+
+			  <div class="form-group">
+			    <input type="text" class="form-control col-md-6 col-md-offset-3 text-center" id="acct3Address" placeholder="Enter Account3's public address" required>
+			  </div>
+
+			  <button type="submit" class="btn btn-primary" onClick="startApp().createVault3();">Deploy new Vault3 contract</button>
+			</form>
+		</div>
+
+		<!-- donate section -->
+		<div id="donate" class="jumbotron">
+			
+			<form class="text-center">
+				<h2>Donate</h2>
+				<div class="form-group">
+				    <input type="text" class="form-control col-md-6 col-md-offset-3 text-center" id="contractAddress" placeholder="Enter contract's address" required>
+				</div>
+
+				<div id="fetchAcct1Addr" rol="alert"></div>
+				<div id="fetchAcct2Addr" rol="alert"></div>
+				<div id="fetchAcct3Addr" rol="alert"></div>
+
+				<div>
+			      <div class="card-deck mb-3 text-center">
+			        <div class="card mb-4 box-shadow">
+			          <div class="card-header">
+			            <h4 class="my-0 font-weight-normal">Gold</h4>
+			          </div>
+			          <div class="card-body">
+			            <h1 class="card-title pricing-card-title">Ξ 0.1 <small class="text-muted">ether</small></h1>
+
+			            <button type="button" class="btn btn-lg btn-block btn-outline-primary" onClick="startApp().submitDeposit(0.1);">Donate</button>
+			          </div>
+			        </div>
+			        <div class="card mb-4 box-shadow">
+			          <div class="card-header">
+			            <h4 class="my-0 font-weight-normal">Bronze</h4>
+			          </div>
+			          <div class="card-body">
+			            <h1 class="card-title pricing-card-title">Ξ 0.01 <small class="text-muted">ether</small></h1>
+
+			            <button type="button" class="btn btn-lg btn-block btn-primary" onClick="startApp().submitDeposit(0.01);">Donate</button>
+			          </div>
+			        </div>
+			        <div class="card mb-4 box-shadow">
+			          <div class="card-header">
+			            <h4 class="my-0 font-weight-normal">Custom</h4>
+			          </div>
+			          <div class="card-body">
+			            <input type="number" class="form-control card-title pricing-card-title" id="donationAmount" placeholder="Enter ether amount" required>
+
+			            <button type="button" class="btn btn-lg btn-block btn-dark" onClick="startApp().submitDeposit();">Donate</button>
+			          </div>
+			        </div>
+			    </div>
+
+			    <!-- lazy spacing -->
+	      		<br>
+			
+				<!-- Withdraw section -->
+				<h2>Withdraw</h2>
+				<button type="submit" class="btn btn-primary" onClick="startApp().withdraw();">Withdraw donations from contract</button>
+			</form>
+		</div>
+
+		<script>
+			function startApp() {
+				// "0xE50a24D1Bfb94D11df0DF6d226d382ddEb451dEf";
+
+			    var vault3Contract = web3js.eth.contract([{"constant":true,"inputs":[],"name":"account3","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_acct","type":"address"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"account2","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"account1","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_acct1","type":"address"},{"name":"_acct2","type":"address"},{"name":"_acct3","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]);
+
+			    // Extra layer of security for user to double check the 3 accouts
+			    $("#contractAddress").on('keyup', function() {
+
+			    	var contractAdr = $("#contractAddress").val();
+
+			    	if (contractAdr < 40) {
+			    		console.log(">> Invalid address, Stop everything.");
+			    		return; // return everything
+			    	}
+
+			    	if (contractAdr.length == 40) contractAdr = "0x" + contractAdr;
+
+					var contractInstance = splitContract.at(contractAdr);
+
+					var acct1Adr = contractInstance.account1.call(function (err, res) {
+						if (err) {
+							return error(err);
+						} else {
+							console.log("successfully fetched Account 1 Address");
+						}
+
+						$("#fetchAcct1Addr").addClass("alert alert-warning")
+						.text("Account1 address: " + res);
+					});
+
+					var acct2Adr = contractInstance.account2.call(function (err, res) {
+						if (err) {
+							return error(err);
+						} else {
+							console.log("successfully fetched Account 2 Address");
+						}
+
+						$("#fetchAcct2Addr").addClass("alert alert-warning")
+						.text("Account2 address: " + res);
+					});
+
+					var acct3Adr = contractInstance.account3.call(function (err, res) {
+						if (err) {
+							return error(err);
+						} else {
+							console.log("successfully fetched Account 3 Address");
+						}
+
+						$("#fetchAcct3Addr").addClass("alert alert-warning")
+						.text("Account3 address: " + res);
+					});
+				});
+
+
+			    // address from metamask > startApp() runs again at time of execution
+			    // so it will pick up the right current userAddress
+			    var userAddress = web3js.eth.accounts[0];
+
+			    function submitDeposit(donationAmount) {
+			    	var contractAddress = $("#contractAddress").val();
+
+			    	if (contractAddress < 40) {
+			    		alert("Invalid contract Address");
+			    		return; // return everything
+			    	}
+
+			    	if (contractAddress.length == 40) contractAddress = "0x" + contractAddress;
+
+			    	var vault3DepositInstance = vault3Contract.at(contractAddress);
+			    	var userDonationChoice = donationAmount || $("#donationAmount").val();
+			    	var donationInEther = (10 ** 18) * userDonationChoice;
+
+			    	vault3DepositInstance.deposit({from: userAddress, value: donationInEther}, function (err, hash) {
+			    		if (err) {
+			    			return error(err);
+			    		}
+
+			    		waitConfirmation(hash, function() {
+			    			console.log("Deposit successfully submitted");
+			    		});
+			    	})
+			    }
+
+			    // see pattern at https://programtheblockchain.com/posts/2017/12/13/building-decentralized-apps-with-ethereum-and-javascript/
+			    function waitConfirmation(hash, cb) {
+			    	web3js.eth.getTransactionReceipt(hash, function(err, receipt) {
+			    		if (err) {
+			    			console.log(err);
+			    		}
+
+			    		if (receipt !== null) {
+			    			// transaction went through
+			    			if (cb) {
+			    				cb(receipt);
+			    			}
+			    		} else {
+			    			// try again in 1s
+			    			window.setTimeout(function () {
+			    				waitConfirmation(hash, cb);
+			    			}, 1000);
+			    		}
+			    	})
+			    }
+
+			    function withdraw() {
+			    	var contractAddress = $("#contractAddress").val();
+
+			    	if (contractAddress.length < 40) {
+			    		alert("Invalid contract address!");
+			    		return; // stop everything
+			    	}
+
+			    	if (contractAddress.length == 40) contractAddress = "0x" + contractAddress;
+
+			    	var vault3WithdrawInstance = vault3Contract.at(contractAddress);
+
+			    	vault3WithdrawInstance.withdraw({from: userAddress}, function (err, hash) {
+			    		if (err) {
+			    			return error(err);
+			    		}
+
+			    		waitConfirmation(hash, function() {
+			    			console.log("Withdraw Transaction was successfully mined.");
+			    		});
+			    	});
+			    }
+
+			    function createVault3Contract() {
+			    	var acct1 = $("#acct1Address").val();
+			    	var acct2 = $("#acct2Address").val();
+			    	var acct3 = $("#acct3Address").val();
+			    	
+
+			    	if (acct1.length < 40 || acct2.length < 40 || acct3.length < 40) {
+			    		alert("Invalid ether addresses!");
+			    		return; // stop everything
+
+			    		if ((acct1 == acct2) || (acct1 == acct3) || (acct2 == acct3)) {
+			    			alert("Accounts must be unique!");
+			    			return;
+			    		}
+			    	}
+
+			    	// add 0x if not included
+			    	if (acct1.length == 40) acct1 = "0x" + acct1;
+			    	if (acct2.length == 40) acct2 = "0x" + acct2;
+			    	if (acct3.length == 40) acct3 = "0x" + acct3;
+
+			    	var newContract = vault3Contract.new(acct1, acct2, acct3, {
+			    		from: userAddress,
+			    		data: "0x608060405234801561001057600080fd5b506040516060806106a18339810180604052810190808051906020019092919080519060200190929190805190602001909291905050508173ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff16141580156100af57508073ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1614155b80156100e757508073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1614155b15156100f257600080fd5b826000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050506104db806101c66000396000f30060806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680632384c0581461007257806351cff8d9146100c957806382f8152c1461010c578063d0e30db014610163578063ecfd0a561461016d575b600080fd5b34801561007e57600080fd5b506100876101c4565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156100d557600080fd5b5061010a600480360381019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506101ea565b005b34801561011857600080fd5b50610121610462565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b61016b610488565b005b34801561017957600080fd5b5061018261048a565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080826000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1614806102965750600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16145b806102ee5750600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16145b15156102f957600080fd5b3073ffffffffffffffffffffffffffffffffffffffff1631925060038381151561031f57fe5b0491506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc839081150290604051600060405180830381858888f19350505050158015610389573d6000803e3d6000fd5b50600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc839081150290604051600060405180830381858888f193505050501580156103f2573d6000803e3d6000fd5b50600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc839081150290604051600060405180830381858888f1935050505015801561045b573d6000803e3d6000fd5b5050505050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a723058203a1b9a1457b75d302f2cf6079cd9f5c2a5aa7e82c775aad96fc3ae918bb82ea50029"
+			    	}, function(err, newContract) {
+			    		if (!err) {
+			    			// Note: The callback will fire twice!
+			    			// Once the contract has the transactionHash property set < and > once its deployed on an address
+
+			    			// e.g. check tx hash on the first call (transaction send)
+			    			if (!newContract.address) {
+			    				// hash of the transaction which deploys the contract
+			    				console.log(">> Transaction hash: ", newContract.transactionHash);
+			    				// check address on the second call (contract deployed)
+			    			} else {
+			    				console.log("deployed address: ", newContract.address);
+			    			}
+			    		}
+			    	});
+
+			    }
+
+			    // shitty getters
+			    return {
+			    	vault3Contract: vault3Contract,
+			    	userAddress: userAddress,
+			    	submitDeposit: submitDeposit,
+			    	createVault3Contract: createVault3Contract,
+			    	withdraw: withdraw
+			    }
+
+			}
+
+		    window.addEventListener('load', function() {
+
+			  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+			  if (typeof web3 !== 'undefined') {
+			    // Use Mist/MetaMask's provider
+			    web3js = new Web3(web3.currentProvider);
+			  } else {
+			    console.log('No web3? You should consider trying MetaMask!')
+			    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+			    web3js = new Web3(new Web3.providers.HttpProvider("https://infura.io/"));
+			  }
+
+			  // Now you can start your app & access web3 freely:
+			  startApp();
+			})
+		</script>
+  </body>
+</html>
