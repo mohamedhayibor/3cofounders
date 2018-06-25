@@ -53,18 +53,18 @@
 				<div id="fetchAcct2Addr" rol="alert"></div>
 				<div id="fetchAcct3Addr" rol="alert"></div>
 
-				<div>
-			      <div class="card-deck mb-3 text-center">
+			    <div class="card-deck mb-3 text-center">
 			        <div class="card mb-4 box-shadow">
 			          <div class="card-header">
 			            <h4 class="my-0 font-weight-normal">Gold</h4>
 			          </div>
+
 			          <div class="card-body">
 			            <h1 class="card-title pricing-card-title">Ξ 0.1 <small class="text-muted">ether</small></h1>
-
 			            <button type="button" class="btn btn-lg btn-block btn-outline-primary" onClick="startApp().submitDeposit(0.1);">Donate</button>
 			          </div>
 			        </div>
+
 			        <div class="card mb-4 box-shadow">
 			          <div class="card-header">
 			            <h4 class="my-0 font-weight-normal">Bronze</h4>
@@ -75,6 +75,7 @@
 			            <button type="button" class="btn btn-lg btn-block btn-primary" onClick="startApp().submitDeposit(0.01);">Donate</button>
 			          </div>
 			        </div>
+			        
 			        <div class="card mb-4 box-shadow">
 			          <div class="card-header">
 			            <h4 class="my-0 font-weight-normal">Custom</h4>
@@ -84,7 +85,8 @@
 
 			            <button type="button" class="btn btn-lg btn-block btn-dark" onClick="startApp().submitDeposit();">Donate</button>
 			          </div>
-			        </div>
+
+			       	</div>
 			    </div>
 
 			    <!-- lazy spacing -->
@@ -102,10 +104,10 @@
 
 			    var vault3Contract = web3js.eth.contract([{"constant":true,"inputs":[],"name":"account3","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_acct","type":"address"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"account2","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"account1","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_acct1","type":"address"},{"name":"_acct2","type":"address"},{"name":"_acct3","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]);
 
-			    // Extra layer of security for user to double check the 3 accouts
+			    // Extra layer of security for user to double check the 3 accounts
 			    $("#contractAddress").on('keyup', function() {
 
-			    	var contractAdr = $("#contractAddress").val();
+			    	var contractAdr = $("#contractAddress").val().trim();
 
 			    	if (contractAdr < 40) {
 			    		console.log(">> Invalid address, Stop everything.");
@@ -114,7 +116,7 @@
 
 			    	if (contractAdr.length == 40) contractAdr = "0x" + contractAdr;
 
-					var contractInstance = splitContract.at(contractAdr);
+					var contractInstance = vault3Contract.at(contractAdr);
 
 					var acct1Adr = contractInstance.account1.call(function (err, res) {
 						if (err) {
@@ -156,7 +158,7 @@
 			    var userAddress = web3js.eth.accounts[0];
 
 			    function submitDeposit(donationAmount) {
-			    	var contractAddress = $("#contractAddress").val();
+			    	var contractAddress = $("#contractAddress").val().trim();
 
 			    	if (contractAddress < 40) {
 			    		alert("Invalid contract Address");
@@ -202,7 +204,7 @@
 			    }
 
 			    function withdraw() {
-			    	var contractAddress = $("#contractAddress").val();
+			    	var contractAddress = $("#contractAddress").val().trim();
 
 			    	if (contractAddress.length < 40) {
 			    		alert("Invalid contract address!");
@@ -225,19 +227,14 @@
 			    }
 
 			    function createVault3Contract() {
-			    	var acct1 = $("#acct1Address").val();
-			    	var acct2 = $("#acct2Address").val();
-			    	var acct3 = $("#acct3Address").val();
+			    	var acct1 = $("#acct1Address").val().trim();
+			    	var acct2 = $("#acct2Address").val().trim();
+			    	var acct3 = $("#acct3Address").val().trim();
 			    	
 
 			    	if (acct1.length < 40 || acct2.length < 40 || acct3.length < 40) {
 			    		alert("Invalid ether addresses!");
 			    		return; // stop everything
-
-			    		if ((acct1 == acct2) || (acct1 == acct3) || (acct2 == acct3)) {
-			    			alert("Accounts must be unique!");
-			    			return;
-			    		}
 			    	}
 
 			    	// add 0x if not included
