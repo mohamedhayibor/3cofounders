@@ -5,15 +5,22 @@ contract vault3 {
     address public account2;
     address public account3;
 
-    modifier onlyOwners (address _acct) {
-        require((_acct == account1) || (_acct == account2) || (_acct == account2));
+    // There's only one God account1
+    // with the only extra privilege to change account2 or account3
+    modifier onlyGod() {
+        require(msg.sender == account1, "You aren't God aka account1");
+        _;
+    }
+
+    modifier onlyOwners () {
+        require((msg.sender == account1) || (msg.sender == account2) || (msg.sender == account2), "You are not an owner");
         _;
     }
 
     // accounts must be distict
     constructor (address _acct1, address _acct2, address _acct3) public {
         // addresses must be unique
-        require((_acct1 != _acct2) && (_acct1 != _acct3) && (_acct2 != _acct3));
+        require((_acct1 != _acct2) && (_acct1 != _acct3) && (_acct2 != _acct3), "Accounts must be distinct");
         account1 = _acct1;
         account2 = _acct2;
         account3 = _acct3;
@@ -24,12 +31,30 @@ contract vault3 {
 
     }
 
-    function withdraw(address _acct) public onlyOwners(_acct) {
+    // withdraw first then change the account
+    function changeAcct2(address _newAcct) onlyGod public {
+        withdraw();
+        account2 = _newAcct;
+    }
+
+    function changeAcct3(address _newAcct) onlyGod public {
+        withdraw();
+        account3 = _newAcct;
+    }
+
+    function withdraw() public onlyOwners {
         uint256 contractBalance = address(this).balance;
         uint256 share = contractBalance / 3;
 
         account1.transfer(share);
         account2.transfer(share);
         account3.transfer(share);
+    }
+
+    // any of the owners can kill the contract
+    // liquidation of the company or disputes
+    function withdrawAndKill() onlyOwners public {
+        withdraw();
+        selfdestruct(0);
     }
 }
