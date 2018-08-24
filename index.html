@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-	<title>Vault3 front-end</title>
+	<title>3cofounders</title>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
@@ -40,11 +40,11 @@
 			</form>
 		</div>
 
-		<!-- donate section -->
+		<!-- Deposit section -->
 		<div id="donate" class="jumbotron">
 			
 			<form class="text-center">
-				<h2>Donate</h2>
+				<h2>Deposit</h2>
 				<div class="form-group">
 				    <input type="text" class="form-control col-md-6 col-md-offset-3 text-center" id="contractAddress" placeholder="Enter contract's address" required>
 				</div>
@@ -61,7 +61,7 @@
 
 			          <div class="card-body">
 			            <h1 class="card-title pricing-card-title">Ξ 0.1 <small class="text-muted">ether</small></h1>
-			            <button type="button" class="btn btn-lg btn-block btn-outline-primary" onClick="startApp().submitDeposit(0.1);">Donate</button>
+			            <button type="button" class="btn btn-lg btn-block btn-outline-primary" onClick="startApp().submitDeposit(0.1);">Deposit</button>
 			          </div>
 			        </div>
 
@@ -72,7 +72,7 @@
 			          <div class="card-body">
 			            <h1 class="card-title pricing-card-title">Ξ 0.01 <small class="text-muted">ether</small></h1>
 
-			            <button type="button" class="btn btn-lg btn-block btn-primary" onClick="startApp().submitDeposit(0.01);">Donate</button>
+			            <button type="button" class="btn btn-lg btn-block btn-primary" onClick="startApp().submitDeposit(0.01);">Deposit</button>
 			          </div>
 			        </div>
 			        
@@ -83,7 +83,7 @@
 			          <div class="card-body">
 			            <input type="number" class="form-control card-title pricing-card-title" id="donationAmount" placeholder="Enter ether amount" required>
 
-			            <button type="button" class="btn btn-lg btn-block btn-dark" onClick="startApp().submitDeposit();">Donate</button>
+			            <button type="button" class="btn btn-lg btn-block btn-dark" onClick="startApp().submitDeposit();">Deposit</button>
 			          </div>
 
 			       	</div>
@@ -94,7 +94,7 @@
 			
 				<!-- Withdraw section -->
 				<h2>Withdraw</h2>
-				<button type="submit" class="btn btn-primary" onClick="startApp().withdraw();">Withdraw donations from contract</button>
+				<button type="submit" class="btn btn-primary" onClick="startApp().withdraw();">Withdraw Eth from contract</button>
 			</form>
 		</div>
 
